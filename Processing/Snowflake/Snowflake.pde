@@ -63,5 +63,5 @@ void draw(){
   
  koch(ax,ay,bx,by,0,true);
  koch(bx,by,ex,ey,0,true);
- koch(ax,ay,ex,ey,0,false);
+ koch(ex,ey,ax,ay,0,true);
 }
