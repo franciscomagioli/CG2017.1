@@ -1,5 +1,5 @@
 //Define maxIntKoch for the max number of interations in the fractal
-int maxIntKoch = 4;
+int maxIntKoch = 3;
 
 float[] roda(float px,float py,float qx,float qy,float theta){
   float p2x = px - qx;
