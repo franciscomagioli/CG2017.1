@@ -1,5 +1,6 @@
 int flag = 0;
-int mousex1,mousey1,mousex2,mousey2;
+int mousex1,mousey1,mousex2,mousey2,n;
+float raio;
 
 float[] roda(float px,float py,float qx,float qy,float theta){
   float p2x = px - qx;
@@ -27,6 +28,9 @@ void draw(){
     line(mousex2,mousey2,ex,ey);
     line(ex,ey,mousex1,mousey1);
     flag=3;
+    
+    raio = sqrt(3)/3*abs((mousex2-mousex1));
+    
   }
   //not working idk why
   //if(flag==3){
@@ -41,12 +45,30 @@ void mouseClicked(){
     mousex1 = mouseX;
     mousey1 = mouseY;
     flag = 1;
-    print(mousex1);
   }
   else if(flag==1){
     mousex2 = mouseX;
     mousey2 = mouseY;
     flag = 2;
-    print(mousex2);
   }
+}
+
+void keyTyped(){
+  background(0);
+  if(key>='3'&& key<='9') n=key-'0';
+  float angulo = TWO_PI/n;
+  noFill();
+  stroke(255);
+  beginShape();
+  //tem como arrumar aonde que o polígono começa?
+  for(int i=0;i<n;i++){
+    int cx = mousex1;
+    int cy=mousey2;
+    float t = i * angulo;
+    float x = raio* cos(t) + cx;
+    float y = raio* sin(t) + cy;
+    vertex(x,y);
+  }
+  endShape(CLOSE);
+  
 }
