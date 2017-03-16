@@ -1,5 +1,5 @@
 //Define maxIntKoch for the max number of interations in the fractal
-int maxIntKoch = 5;
+int maxIntKoch = 4;
 
 float[] roda(float px,float py,float qx,float qy,float theta){
   float p2x = px - qx;
@@ -12,7 +12,8 @@ float[] roda(float px,float py,float qx,float qy,float theta){
   return result;
 }
 
-void koch(float ax,float ay,float bx,float by,float n){
+//positive parameter to "fix" which side the koch fractal will occur
+void koch(float ax,float ay,float bx,float by,float n,boolean positive){
   if(n==maxIntKoch){
     line(ax,ay,bx,by);
   }
@@ -23,22 +24,27 @@ void koch(float ax,float ay,float bx,float by,float n){
    float dx = ax/3 + 2* bx/3;
    float dy = ay/3 + 2* by/3;
    
-   //problem
-   float e[] = roda(cx,cy,dx,dy,PI/3);
+   float[] e;
+   if(positive==true){
+     e = roda(cx,cy,dx,dy,PI/3);
+   }
+   else{
+     e = roda(cx,cy,dx,dy,-PI/3);
+   }
    
    float ex = e[0];
    float ey = e[1];
    
-   koch(ax,ay,cx,cy,n+1);
-   koch(cx,cy,ex,ey,n+1);
-   koch(ex,ey,dx,dy,n+1);
-   koch(dx,dy,bx,by,n+1);
+   koch(ax,ay,cx,cy,n+1,positive);
+   koch(cx,cy,ex,ey,n+1,positive);
+   koch(ex,ey,dx,dy,n+1,positive);
+   koch(dx,dy,bx,by,n+1,positive);
    
   } 
 }
 
 void setup(){
- size(640,400); 
+ size(600,600); 
  frameRate(1);
 }
 
@@ -47,20 +53,15 @@ void draw(){
  background(255);
   
  float ax = 160;
- float ay = 350;
+ float ay = 300;
  float bx = width-160;
- float by = 350;
+ float by = 300;
   
-  //problem
  float[] e = roda(ax,ay,bx,by,-PI/3);
  float ex = e[0];
  float ey = e[1];
- 
- //line(ax,ay,bx,by);
- //line(bx,by,ex,ey);
- //line(ax,ay,ex,ey);
- 
- koch(ax,ay,bx,by,0);
- koch(bx,by,ex,ey,0);
- koch(ex,ey,bx,by,0);
+  
+ koch(ax,ay,bx,by,0,true);
+ koch(bx,by,ex,ey,0,true);
+ koch(ax,ay,ex,ey,0,false);
 }
