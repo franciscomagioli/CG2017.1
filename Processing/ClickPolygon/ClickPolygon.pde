@@ -29,19 +29,14 @@ void draw(){
     line(ex,ey,mousex1,mousey1);
     flag=3;
     
+    //raio usado para gerar novos polígonos
     raio = sqrt(3)/3*abs((mousex2-mousex1));
-    
-  }
-  //not working idk why
-  //if(flag==3){
-  // flag=0;
-  // background(0);
-  //}
-  
+  } 
 }
 
 void mouseClicked(){
   if (flag==0){
+    background(0);
     mousex1 = mouseX;
     mousey1 = mouseY;
     flag = 1;
@@ -60,15 +55,15 @@ void keyTyped(){
   noFill();
   stroke(255);
   beginShape();
-  //tem como arrumar aonde que o polígono começa?
   for(int i=0;i<n;i++){
-    int cx = mousex1;
-    int cy=mousey2;
+    int cx = abs(mousex1+mousex2)/2;
+    int cy = abs(mousey1+mousey2)/2;
     float t = i * angulo;
     float x = raio* cos(t) + cx;
     float y = raio* sin(t) + cy;
     vertex(x,y);
   }
   endShape(CLOSE);
+  flag = 0;
   
 }
