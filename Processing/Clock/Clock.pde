@@ -1,8 +1,3 @@
-//todo
-//posicionar linhas do relógio
-//criar ponteiros para segundo e minuto
-//criar ponteiro da hora rodando conforme a posicao dos minutos
-
 color black = color(0,0,0);
 float angulo_12 = TWO_PI/12;
 float angulo_60 = TWO_PI/60;
@@ -19,14 +14,6 @@ void draw(){
 }
 
 void clock(){
-  
-  // Angles for sin() and cos() start at 3 o'clock;
-  // subtract HALF_PI to make them start at the top
-  //from https://processing.org/examples/clock.html
-  float s = map(second(), 0, 60, 0, TWO_PI) - HALF_PI;
-  float m = map(minute() + norm(second(), 0, 60), 0, 60, 0, TWO_PI) - HALF_PI; 
-  float h = map(hour() + norm(minute(), 0, 60), 0, 24, 0, TWO_PI * 2) - HALF_PI;
-
  //base clock
  ellipseMode(CENTER);
  fill(black);
@@ -44,7 +31,6 @@ void clock(){
    float angMarkers = angulo_12*i;
    float posX = r* cos(angMarkers)+cx;
    float posY = r* sin(angMarkers)+cy;
-   
    float r2 = 0;
    if(i%3==0) r2 = width/4.2;
    if(i%3!=0) r2 = width/3.8;
@@ -74,8 +60,11 @@ void clock(){
  strokeWeight(3);
  float rHour = width/6.5;
  float aHour = (angulo_12*hour()%12)+(3*PI/2.0);
- float pxHour = rHour * cos(aHour);
- float pyHour = rHour * sin(aHour);
+ //angulo andado a cada minuto pelo ponteiro de hora
+ float aMinForHour = TWO_PI/720*minute();
+ float aHourWMinutes = aHour+aMinForHour;
+ float pxHour = rHour * cos(aHourWMinutes);
+ float pyHour = rHour * sin(aHourWMinutes);
  line(cx,cy,cx+pxHour,cy+pyHour);
   
 }
