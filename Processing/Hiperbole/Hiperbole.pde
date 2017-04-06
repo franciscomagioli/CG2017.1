@@ -14,7 +14,7 @@
 
 float a = -1;
 float b = 1;
-float c = 0;
+float c = 4;
 
 //steps for curve cration
 float dx = 0.1;
@@ -69,7 +69,7 @@ void minMaxPoint(){
   float[] xy= matemagicaToPixel(xMinMax,yMinMax);
   float newx = xy[0];
   float newy = xy[1];
-  ellipse(newx, newy, 10, 10); 
+  ellipse(newx, newy, 5, 5); 
 }
 
 //Calculate roots
@@ -80,8 +80,8 @@ void roots(){
   float newX2 = matemagicaToPixelX(x2);
   ellipseMode(CENTER);
   fill(22);
-  ellipse(newX1, height/2, 10, 10); 
-  ellipse(newX2, height/2, 10, 10); 
+  ellipse(newX1, height/2, 5, 5); 
+  ellipse(newX2, height/2, 5, 5); 
 }
 
 //transform math representation to screen representation
