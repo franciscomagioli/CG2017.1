@@ -12,17 +12,32 @@
 //tem que "transformar" os pontos matemagicos para a telinha
 //width/2 e height/2 = (0,0)
 
-float a = 1;
+float a = -1;
 float b = 1;
-float c = 1;
+float c = 0;
+
+//steps for curve cration
+float dx = 0.1;
+
+//números para representar na tela
+float minX = -6;
+float maxX = 6;
+float minY = -6;
+float maxY = 6;
+
+float delta = pow(b,2) - 4*a*c;
+
+float tempMinX = minX;
 
 void setup(){
  size(600,600);
- axes();
 }
 
 void draw(){
- rootsAndMinMaxPoint();
+ axes();
+ parabola();
+ roots();
+ minMaxPoint();
 }
 
 void axes(){
@@ -31,28 +46,55 @@ void axes(){
 }
 
 void parabola(){
-  //x=-3
-  //xf=3
-  //dx=0.01
-  //while(x<xf){
-    //y=f(x);
-    //vertex(x,y);
-    //x+=dx;
-//  }
-//  //endShape();
+  while(tempMinX<maxX){
+    float y=a*pow(tempMinX,2)+ (b*tempMinX) + c;
+    float[] xy= matemagicaToPixel(tempMinX,y);
+    float newx = xy[0];
+    float newy = xy[1];
+    print("before: "+tempMinX+" " +y + "\n");
+    print("after: "+ xy[0]+" " +xy[1] + "\n");
+    vertex(newx,newy);
+    tempMinX+=dx;
+  }
+  endShape();
 }
 
-void rootsAndMinMaxPoint(){
+//calculates Min or Max Point
+void minMaxPoint(){
   float xMinMax = -b/(2*a);
-  float delta = pow(b,2) - 4*a*c;
   float yMinMax = - delta/(4*a);
   ellipseMode(CENTER);
-  fill(13);
-  noStroke();
-  ellipse(xMinMax, yMinMax, 5, 5); 
+  fill(22);
+  float[] xy= matemagicaToPixel(xMinMax,yMinMax);
+  float newx = xy[0];
+  float newy = xy[1];
+  ellipse(newx, newy, 10, 10); 
 }
 
-//
-float matemagicaToPixel(float num){
+//Calculate roots
+void roots(){
+  float x1 = (-b + sqrt(delta))/(2*a);
+  float x2 = (-b - sqrt(delta))/(2*a);
+  float newX1 = matemagicaToPixelX(x1);
+  float newX2 = matemagicaToPixelX(x2);
+  ellipseMode(CENTER);
+  fill(22);
+  ellipse(newX1, height/2, 10, 10); 
+  ellipse(newX2, height/2, 10, 10); 
+}
 
+//transform math representation to screen representation
+float[] matemagicaToPixel(float numX, float numY){
+  float newX,newY;
+  newX = width/2 + width*numX/maxX;
+  newY = height/2 + height*numY/maxY;
+  float[] result = {newX,newY};
+  return result;
+}
+
+//transform math representation to screen representation
+float matemagicaToPixelX(float numX){
+  float newX;
+  newX = width/2 + width*numX/maxX;
+  return newX;
 }
