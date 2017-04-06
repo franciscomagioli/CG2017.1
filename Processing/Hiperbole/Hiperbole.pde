@@ -46,6 +46,7 @@ void axes(){
 }
 
 void parabola(){
+  beginShape();
   while(tempMinX<maxX){
     float y=a*pow(tempMinX,2)+ (b*tempMinX) + c;
     float[] xy= matemagicaToPixel(tempMinX,y);
@@ -86,8 +87,8 @@ void roots(){
 //transform math representation to screen representation
 float[] matemagicaToPixel(float numX, float numY){
   float newX,newY;
-  newX = width/2 + width*numX/maxX;
-  newY = height/2 + height*numY/maxY;
+  newX = width/2 + width*numX/(maxX-minX);
+  newY = height/2 - height*numY/(maxY-minY);
   float[] result = {newX,newY};
   return result;
 }
@@ -95,6 +96,6 @@ float[] matemagicaToPixel(float numX, float numY){
 //transform math representation to screen representation
 float matemagicaToPixelX(float numX){
   float newX;
-  newX = width/2 + width*numX/maxX;
+  newX = width/2 + width*numX/(maxX-minX);
   return newX;
 }
