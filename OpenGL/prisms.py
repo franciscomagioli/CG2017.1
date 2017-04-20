@@ -12,14 +12,6 @@ from OpenGL.GLU import *
 from OpenGL.GL import *
 import math
 
-verticesCirc = (
-  (0,0,1),
-  (0,0,-1)
-)
-
-def Prism():
-  test = 0
-
 def polygonVerticesGenerator(sides, radius, yAxis):
   vertices = []
   ang = 2 * math.pi / sides  
@@ -27,20 +19,16 @@ def polygonVerticesGenerator(sides, radius, yAxis):
     t = ang * i
     x = radius * math.cos(t)
     z = radius * math.sin(t)
-    # print (x,y,zAxis)
     vertices.append((x,yAxis,z))
   return vertices
    
-#juntar vertice e vertice seguinte
-#no ultimo vertice, juntar com o primeiro 
-#def connectPolygonVertices(vertices):
-
-
 #conecta pontos entre os poligonos
 def wireframe(vertices1,vertices2):
   glColor3fv((0,0.5,0))
   glBegin(GL_LINES)
   for vertex in range(0,len(vertices1)):
+    glVertex3fv(vertices1[vertex])
+    glVertex3fv(vertices2[vertex])
     if vertex != len(vertices1)-1:
       glVertex3fv(vertices1[vertex])
       glVertex3fv(vertices1[vertex+1])
@@ -51,6 +39,15 @@ def wireframe(vertices1,vertices2):
       glVertex3fv(vertices1[0])
       glVertex3fv(vertices2[vertex])
       glVertex3fv(vertices2[0])
+  glEnd()
+
+#nao utilizado
+def wireframeFaces(vertices1,vertices2):
+  glColor3fv((0,0.5,0))
+  glBegin(GL_LINES)
+  for vertex in range(0,len(vertices1)):
+      glVertex3fv(vertices1[vertex])
+      glVertex3fv(vertices2[vertex])
   glEnd()
 
 #gera face superior e inferior do prisma
@@ -66,10 +63,8 @@ def polygonFaceGenerator(vertices):
 #no final da lista, utiliza o ũltimo e o primeiro de ambas as listas
 def sideFacesGenerator(vertices1, vertices2):
   for vertex in range(0,len(vertices1)):
-  #for vertex in range(0,1):
     if vertex != len(vertices1)-1:
       glBegin(GL_POLYGON)
-      #glVertex3f(vertices1[vertex][0], vertices1[vertex][1], vertices1[vertex][2])
       glVertex3fv(vertices1[vertex])
       glVertex3fv(vertices1[vertex+1])
       glVertex3fv(vertices2[vertex+1])
@@ -82,8 +77,6 @@ def sideFacesGenerator(vertices1, vertices2):
       glVertex3fv(vertices2[0])
       glVertex3fv(vertices2[vertex])
       glEnd()
-      
-
 
 def display():
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -91,15 +84,14 @@ def display():
 
   #vars
   radius = 0.6
-  sides = 5
+  sides = 8
   trunk = 0.4
   dVPolygon = polygonVerticesGenerator(sides, radius, -1+trunk)
   uVPolygon = polygonVerticesGenerator(sides, radius, 1-trunk)
 
-  #polygonLinesGenerator(dVPolygon, uVPolygon)
   wireframe(dVPolygon, uVPolygon)
 
-  glColor3fv((0.05,0,0))
+  glColor3fv((0.01,0.01,0.01))
   polygonFaceGenerator(dVPolygon)
   polygonFaceGenerator(uVPolygon)
   sideFacesGenerator(dVPolygon, uVPolygon)
