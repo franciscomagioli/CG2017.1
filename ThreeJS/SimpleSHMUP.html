@@ -1,0 +1,389 @@
+<html>
+	<head>
+		<title>Simple SHMUP</title>
+		<style>
+			body {
+            background-color: #000000;
+            margin: 0px;
+            overflow: hidden;
+            font-family:Monospace;
+            font-size:13px;
+            text-align:center;
+            font-weight: bold;
+            text-align:center;
+        	}
+			canvas { width: 100%; height: 100% }
+			
+			#info {
+	            color:#fff;
+	            position: absolute;
+	            top: 0px; width: 100%;
+	            padding: 5px;
+	            z-index:100;
+       		}
+       		a {
+            color:#0078ff;
+        	}
+		</style>
+	</head>
+	<body>
+	<div id="info">
+    - Simple SHMUP - <br>
+    GitHub: <a href="http:/github.com/franciscomagioli/CG2017.1" target="_blank">franciscomagioli</a>
+	</div>
+	<div id="container"></div>
+	<script src="three.min.js"></script>
+	<script>
+		// Set the scene size.
+		const WIDTH = window.innerWidth;
+		const HEIGHT = window.innerHeight;
+
+		// Set some camera attributes.
+		const VIEW_ANGLE = 45;
+		const ASPECT = WIDTH / HEIGHT;
+		const NEAR = 0.1;
+		const FAR = 10000;
+
+		// Get the DOM element to attach to
+		const container =
+		    document.querySelector('#container');
+
+		// Create a WebGL renderer, camera
+		// and a scene
+		const renderer = new THREE.WebGLRenderer({antialias: true});
+		const camera =
+		    new THREE.PerspectiveCamera(
+		        VIEW_ANGLE,
+		        ASPECT,
+		        NEAR,
+		        FAR
+		    );
+
+		const scene = new THREE.Scene();
+
+		// Add the camera to the scene.
+		scene.add(camera);
+
+		// Start the renderer.
+		renderer.setSize(WIDTH, HEIGHT);
+
+		// Attach the renderer-supplied
+		// DOM element.
+		container.appendChild(renderer.domElement);
+
+		//-----------------------------------------------------------------------------------------------
+		var moveForward, moveLeft, moveBackward, moveRight, shoot;
+
+		//Controls
+		var onKeyDown = function ( event ) {
+					switch ( event.keyCode ) {
+						case 38: // up
+						case 87: // w
+							moveForward = true;
+							break;
+						case 37: // left
+						case 65: // a
+							moveLeft = true; 
+							break;
+						case 40: // down
+						case 83: // s
+							moveBackward = true;
+							break;
+						case 39: // right
+						case 68: // d
+							moveRight = true;
+							break;
+						case 90: // z
+							shoot = true;
+							break;
+					}
+				};
+
+		var onKeyUp = function ( event ) {
+			switch( event.keyCode ) {
+				case 38: // up
+				case 87: // w
+					moveForward = false;
+					break;
+				case 37: // left
+				case 65: // a
+					moveLeft = false;
+					break;
+				case 40: // down
+				case 83: // s
+					moveBackward = false;
+					break;
+				case 39: // right
+				case 68: // d
+					moveRight = false;
+					break;
+				case 90: // z
+					shoot = true;
+					break;
+			}
+		};
+
+		document.addEventListener( 'keydown', onKeyDown, false );
+		document.addEventListener( 'keyup', onKeyUp, false );
+
+
+		//------------------------------------------------------------------------------------------------
+		//Plataforma
+		var platGeometry = new THREE.BoxGeometry( 105, 190, 15 );
+		var materialPlataforma = new THREE.MeshPhongMaterial( {
+					color: 0x156289,
+					emissive: 0x072534,
+					side: THREE.DoubleSide,
+					shading: THREE.FlatShading
+				} )
+		var plataforma = new THREE.Mesh( platGeometry, materialPlataforma );
+
+		plataforma.position.y = 20;
+		plataforma.position.z = -800;
+		//plataforma.rotation.y = 0.35;
+
+		scene.add( plataforma );
+
+
+		//Blocos
+		var blocoGeometry = new THREE.BoxGeometry( 7.5, 7.5, 15 );
+		var materialBloco = new THREE.MeshPhongMaterial( {
+					color: 0xf5fce3,
+					emissive: 0xd9f599,
+					side: THREE.DoubleSide,
+					shading: THREE.FlatShading
+				} )
+
+		var bloco1 = new THREE.Mesh( blocoGeometry, materialBloco );
+		bloco1.position.x = -45;
+		bloco1.position.z = -790;
+		scene.add(bloco1);
+
+		var bloco2 = new THREE.Mesh( blocoGeometry, materialBloco );
+		bloco2.position.x = -45;
+		bloco2.position.y = -10;
+		bloco2.position.z = -790;
+		scene.add(bloco2);
+
+		var bloco3 = new THREE.Mesh( blocoGeometry, materialBloco );
+		bloco3.position.x = +45;
+		bloco3.position.y = -10;
+		bloco3.position.z = -790;
+		scene.add(bloco3);
+
+		var bloco4 = new THREE.Mesh( blocoGeometry, materialBloco );
+		bloco4.position.x = +45;
+		bloco4.position.y = 0;
+		bloco4.position.z = -790;
+		scene.add(bloco4);
+
+		//blocos topo superior direito
+		var bloco5 = new THREE.Mesh( blocoGeometry, materialBloco );
+		bloco5.position.x = +45;
+		bloco5.position.y = +100;
+		bloco5.position.z = -790;
+		scene.add(bloco5);
+
+		var bloco6 = new THREE.Mesh( blocoGeometry, materialBloco );
+		bloco6.position.x = +35;
+		bloco6.position.y = +100;
+		bloco6.position.z = -790;
+		scene.add(bloco6);
+
+		var bloco7 = new THREE.Mesh( blocoGeometry, materialBloco );
+		bloco7.position.x = +45;
+		bloco7.position.y = +90;
+		bloco7.position.z = -790;
+		scene.add(bloco7);
+
+		//blocos canto superior esquerdo
+		var bloco8 = new THREE.Mesh( blocoGeometry, materialBloco );
+		bloco8.position.x = -45;
+		bloco8.position.y = +100;
+		bloco8.position.z = -790;
+		scene.add(bloco8);
+
+		var bloco9 = new THREE.Mesh( blocoGeometry, materialBloco );
+		bloco9.position.x = -35;
+		bloco9.position.y = +100;
+		bloco9.position.z = -790;
+		scene.add(bloco9);
+
+		var bloco10 = new THREE.Mesh( blocoGeometry, materialBloco );
+		bloco10.position.x = -45;
+		bloco10.position.y = +90;
+		bloco10.position.z = -790;
+		scene.add(bloco10);
+
+		//Nave-2d shape - nao devo usar
+		// var x = 0, y = 0;
+
+		// var heartShape = new THREE.Shape();
+
+		// heartShape.moveTo( x + 5, y + 5 );
+		// heartShape.bezierCurveTo( x + 5, y + 5, x + 4, y, x, y );
+		// heartShape.bezierCurveTo( x - 6, y, x - 6, y + 7,x - 6, y + 7 );
+		// heartShape.bezierCurveTo( x - 6, y + 11, x - 3, y + 15.4, x + 5, y + 19 );
+		// heartShape.bezierCurveTo( x + 12, y + 15.4, x + 16, y + 11, x + 16, y + 7 );
+		// heartShape.bezierCurveTo( x + 16, y + 7, x + 16, y, x + 10, y );
+		// heartShape.bezierCurveTo( x + 7, y, x + 5, y + 5, x + 5, y + 5 );
+
+		// var geometry = new THREE.ShapeBufferGeometry( heartShape );
+		// var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+		// var mesh = new THREE.Mesh( geometry, material ) ;
+		// mesh.position.y=-30;
+		// mesh.position.z = -780;
+		// scene.add( mesh );
+
+		//Nave
+		var geometryNave = new THREE.ConeGeometry( 2, 7, 32 );
+		var materialNave = new THREE.MeshPhongMaterial( {
+					color: 0xf29191,
+					emissive: 0xf29191,
+					side: THREE.DoubleSide,
+					shading: THREE.FlatShading
+				} )
+		var nave = new THREE.Mesh( geometryNave, materialNave );
+		nave.position.y = -70;
+		nave.position.z=-790;
+		scene.add( nave );
+
+		//Inimigos
+		var geometryCy = new THREE.CylinderGeometry( 4.2, 4.2, 10, 40 );
+		var materialCy = new THREE.MeshPhongMaterial( {
+					color: 0x260202,
+					emissive: 0x510505,
+					side: THREE.DoubleSide,
+					shading: THREE.FlatShading
+				} )
+
+		var inimigo1 = new THREE.Mesh(geometryCy, materialCy);
+		inimigo1.rotation.x = Math.PI/2;
+		inimigo1.position.x = -20;
+		inimigo1.position.y = -5;
+		inimigo1.position.z = -790;
+		scene.add(inimigo1);
+
+		var inimigo2 = new THREE.Mesh(geometryCy, materialCy);
+		inimigo2.rotation.x = Math.PI/2;
+		inimigo2.position.x = +20;
+		inimigo2.position.y = -5;
+		inimigo2.position.z = -790;
+		scene.add(inimigo2);
+
+		var inimigo3 = new THREE.Mesh(geometryCy, materialCy);
+		inimigo3.rotation.x = Math.PI/2;
+		inimigo3.position.x = 0;
+		inimigo3.position.y = -5;
+		inimigo3.position.z = -790;
+		scene.add(inimigo3);
+
+		//boss dodecaedro
+		var geoBoss = new THREE.DodecahedronGeometry(10,0);
+		var materialBoss = new THREE.MeshPhongMaterial( {
+					color: 0x260202,
+					emissive: 0xe7e2fd,
+					side: THREE.DoubleSide,
+					shading: THREE.FlatShading
+				} )
+		
+		var boss = new THREE.Mesh(geoBoss, materialBoss);
+		boss.position.y = +20;
+		boss.position.z = -740;
+		scene.add(boss);
+
+		function animacaoBoss (boss){
+			var colorido = Math.random() * 0xffffff;
+			boss.material.color.setHex( colorido );
+			boss.rotation.x += 0.05;
+			boss.rotation.y += 0.05; 
+		};
+
+
+
+
+
+		// Iluminação
+		const pointLight =
+		  new THREE.PointLight(0xFFFFFF);
+
+		// set its position
+		pointLight.position.x = 10;
+		pointLight.position.y = 50;
+		pointLight.position.z = -230;
+
+		// add to the scene
+		scene.add(pointLight);
+
+
+		camera.position.set(0, -120, -600);
+		camera.lookAt(new THREE.Vector3(0, 0, -800));
+
+
+		// Draw!
+		//renderer.render(scene, camera);
+
+		function update () {
+
+			requestAnimationFrame(update);
+			animacaoBoss(boss);
+
+			//movimentacao nave
+			if(moveForward && moveRight){
+				nave.position.y += 0.4 ;
+				nave.position.x += 0.4;
+				nave.rotation.z = -Math.PI/4;
+			}
+
+			else if(moveForward && moveLeft){
+				nave.position.y += 0.4 ;
+				nave.position.x -= 0.4;
+				nave.rotation.z = Math.PI/4;
+			}
+
+			else if(moveBackward && moveRight){
+				nave.position.y -= 0.4 ;
+				nave.position.x += 0.4;
+				nave.rotation.z = -3*Math.PI/4;
+			}
+
+			else if(moveBackward && moveLeft){
+				nave.position.y -= 0.4 ;
+				nave.position.x -= 0.4;
+				nave.rotation.z = 3*Math.PI/4;
+			}
+
+			else if (moveForward){
+				nave.position.y += 0.4 ;
+				nave.rotation.z = 2*Math.PI;
+			}
+
+			else if (moveBackward){
+				nave.position.y -= 0.4;
+				nave.rotation.z = Math.PI;
+			}
+
+			else if (moveRight){
+				nave.position.x += 0.4;
+				nave.rotation.z = -Math.PI/2;
+			}
+
+			else if(moveLeft){
+				nave.position.x -= 0.4;
+				nave.rotation.z = Math.PI/2;
+			}
+
+		    //plataforma.rotation.y += 0.05;
+		    //nave.position.y += 0.05;
+		    renderer.render(scene, camera);
+
+		};
+
+		update();
+
+		//usar um requestAnimation dentro do update e mais um fora deixa mais fluido
+		requestAnimationFrame(update);
+
+	</script>
+	</body>
+</html>
