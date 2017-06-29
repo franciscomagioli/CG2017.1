@@ -94,6 +94,7 @@
 							moveRight = true;
 							break;
 						case 90: // z
+						case 32://space
 							shoot = true;
 							break;
 					}
@@ -118,7 +119,8 @@
 					moveRight = false;
 					break;
 				case 90: // z
-					shoot = true;
+				case 32://space
+					shoot = false;
 					break;
 			}
 		};
@@ -128,6 +130,9 @@
 
 
 		//------------------------------------------------------------------------------------------------
+		//bullets
+		var bullets = [];
+
 		//Plataforma
 		var platGeometry = new THREE.BoxGeometry( 105, 190, 15 );
 		var materialPlataforma = new THREE.MeshPhongMaterial( {
@@ -320,6 +325,8 @@
 		camera.lookAt(new THREE.Vector3(0, 0, -800));
 
 
+
+
 		// Draw!
 		//renderer.render(scene, camera);
 
@@ -328,7 +335,7 @@
 			requestAnimationFrame(update);
 			animacaoBoss(boss);
 
-			//movimentacao nave
+			//- Movimentacao nave -
 			if(moveForward && moveRight){
 				nave.position.y += 0.4 ;
 				nave.position.x += 0.4;
@@ -373,6 +380,46 @@
 				nave.rotation.z = Math.PI/2;
 			}
 
+			// - Bullets -
+			// update vetor de bullets
+			for(var index=0; index<bullets.length; index+=1){
+				if( bullets[index] === undefined ) continue;
+				if( bullets[index].alive == false ){
+					bullets.splice(index,1);
+					continue;
+				}
+				bullets[index].position.add(bullets[index].velocity);
+			}
+
+			if(shoot){ 
+				var sgeo = new THREE.SphereGeometry(2,8,8);
+				var matgeo = new THREE.MeshBasicMaterial({color:0xffffff});
+				var bullet = new THREE.Mesh(sgeo, matgeo);
+				bullet.position.z = -780;
+				scene.add(bullet);
+			
+				bullet.position.set(
+					nave.position.x,
+					nave.position.y + 0.15,
+					nave.position.z
+				);
+				
+				bullet.velocity = new THREE.Vector3(
+				-Math.sin(camera.rotation.y),
+				Math.cos(camera.rotation.y),
+				0
+				);
+				
+				// TTL
+				bullet.alive = true;
+				setTimeout(function(){
+					bullet.alive = false;
+					scene.remove(bullet);
+				}, 1000);
+				
+				bullets.push(bullet);
+				scene.add(bullet);
+			}
 		    //plataforma.rotation.y += 0.05;
 		    //nave.position.y += 0.05;
 		    renderer.render(scene, camera);
