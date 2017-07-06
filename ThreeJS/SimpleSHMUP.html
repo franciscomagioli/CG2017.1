@@ -72,7 +72,8 @@
 		container.appendChild(renderer.domElement);
 
 		//-----------------------------------------------------------------------------------------------
-		var moveForward, moveLeft, moveBackward, moveRight, shoot;
+		var moveForward, moveLeft, moveBackward, moveRight, shoot, positionFlag;
+		var possibleToShoot =0;
 
 		//Controls
 		var onKeyDown = function ( event ) {
@@ -255,28 +256,42 @@
 
 		//Inimigos
 		var geometryCy = new THREE.CylinderGeometry( 4.2, 4.2, 10, 40 );
-		var materialCy = new THREE.MeshPhongMaterial( {
+
+		//3 materiais para cada um poder ser updateado separadamente
+		var materialCy1 = new THREE.MeshPhongMaterial( {
+					color: 0x260202,
+					emissive: 0x510505,
+					side: THREE.DoubleSide,
+					shading: THREE.FlatShading
+				} )
+		var materialCy2 = new THREE.MeshPhongMaterial( {
+					color: 0x260202,
+					emissive: 0x510505,
+					side: THREE.DoubleSide,
+					shading: THREE.FlatShading
+				} )
+		var materialCy3 = new THREE.MeshPhongMaterial( {
 					color: 0x260202,
 					emissive: 0x510505,
 					side: THREE.DoubleSide,
 					shading: THREE.FlatShading
 				} )
 
-		var inimigo1 = new THREE.Mesh(geometryCy, materialCy);
+		var inimigo1 = new THREE.Mesh(geometryCy, materialCy1);
 		inimigo1.rotation.x = Math.PI/2;
 		inimigo1.position.x = -20;
 		inimigo1.position.y = -5;
 		inimigo1.position.z = -790;
 		scene.add(inimigo1);
 
-		var inimigo2 = new THREE.Mesh(geometryCy, materialCy);
+		var inimigo2 = new THREE.Mesh(geometryCy, materialCy2);
 		inimigo2.rotation.x = Math.PI/2;
 		inimigo2.position.x = +20;
 		inimigo2.position.y = -5;
 		inimigo2.position.z = -790;
 		scene.add(inimigo2);
 
-		var inimigo3 = new THREE.Mesh(geometryCy, materialCy);
+		var inimigo3 = new THREE.Mesh(geometryCy, materialCy3);
 		inimigo3.rotation.x = Math.PI/2;
 		inimigo3.position.x = 0;
 		inimigo3.position.y = -5;
@@ -284,7 +299,7 @@
 		scene.add(inimigo3);
 
 		//boss dodecaedro
-		var geoBoss = new THREE.DodecahedronGeometry(10,0);
+		var geoBoss = new THREE.DodecahedronGeometry(15,0);
 		var materialBoss = new THREE.MeshPhongMaterial( {
 					color: 0x260202,
 					emissive: 0xe7e2fd,
@@ -293,8 +308,8 @@
 				} )
 		
 		var boss = new THREE.Mesh(geoBoss, materialBoss);
-		boss.position.y = +20;
-		boss.position.z = -740;
+		boss.position.y = +63;
+		boss.position.z = -790;
 		scene.add(boss);
 
 		function animacaoBoss (boss){
@@ -324,8 +339,16 @@
 		camera.position.set(0, -120, -600);
 		camera.lookAt(new THREE.Vector3(0, 0, -800));
 
+		//bounding boxes
+		var i1bb = new THREE.Box3().setFromObject(inimigo1);
+		var i2bb = new THREE.Box3().setFromObject(inimigo2);
+		var i3bb = new THREE.Box3().setFromObject(inimigo3);
+		var nbb = new THREE.Box3().setFromObject(nave);
 
+		//need to fix this bb
+		var bbb = new THREE.Box3().setFromObject(boss);
 
+		
 
 		// Draw!
 		//renderer.render(scene, camera);
@@ -337,47 +360,55 @@
 
 			//- Movimentacao nave -
 			if(moveForward && moveRight){
-				nave.position.y += 0.4 ;
-				nave.position.x += 0.4;
+				if(nave.position.y < 108) nave.position.y += 0.4 ;
+				if(nave.position.x < 47) nave.position.x += 0.4;
 				nave.rotation.z = -Math.PI/4;
+				positionFlag = 9
 			}
 
 			else if(moveForward && moveLeft){
-				nave.position.y += 0.4 ;
-				nave.position.x -= 0.4;
+				if(nave.position.y < 108) nave.position.y += 0.4 ;
+				if(nave.position.x > -47) nave.position.x -= 0.4;
 				nave.rotation.z = Math.PI/4;
+				positionFlag = 7
 			}
 
 			else if(moveBackward && moveRight){
-				nave.position.y -= 0.4 ;
-				nave.position.x += 0.4;
+				if(nave.position.y > -71) nave.position.y -= 0.4 ;
+				if(nave.position.x < 47) nave.position.x += 0.4;
 				nave.rotation.z = -3*Math.PI/4;
+				positionFlag = 3
 			}
 
 			else if(moveBackward && moveLeft){
-				nave.position.y -= 0.4 ;
-				nave.position.x -= 0.4;
+				if(nave.position.y > -71) nave.position.y -= 0.4 ;
+				if(nave.position.x > -47) nave.position.x -= 0.4;
 				nave.rotation.z = 3*Math.PI/4;
+				positionFlag = 1
 			}
 
 			else if (moveForward){
-				nave.position.y += 0.4 ;
+				if(nave.position.y < 108) nave.position.y += 0.4 ;
 				nave.rotation.z = 2*Math.PI;
+				positionFlag = 8
 			}
 
 			else if (moveBackward){
-				nave.position.y -= 0.4;
+				if(nave.position.y > -71) nave.position.y -= 0.4;
 				nave.rotation.z = Math.PI;
+				positionFlag = 2
 			}
 
 			else if (moveRight){
-				nave.position.x += 0.4;
+				if(nave.position.x < 47) nave.position.x += 0.4;
 				nave.rotation.z = -Math.PI/2;
+				positionFlag = 6
 			}
 
 			else if(moveLeft){
-				nave.position.x -= 0.4;
+				if(nave.position.x > -47) nave.position.x -= 0.4;
 				nave.rotation.z = Math.PI/2;
+				positionFlag = 4
 			}
 
 			// - Bullets -
@@ -389,9 +420,28 @@
 					continue;
 				}
 				bullets[index].position.add(bullets[index].velocity);
+
+				//colisão bullet+objetos
+				bulletbb = new THREE.Box3().setFromObject(bullets[index]);
+				var checkBulletColI1 = i1bb.intersectsBox(bulletbb);
+				var checkBulletColI2 = i2bb.intersectsBox(bulletbb);
+				var checkBulletColI3 = i3bb.intersectsBox(bulletbb);
+
+				if(checkBulletColI1){
+					inimigo1.material.color.setHex(0x000000);
+				}
+
+				else if(checkBulletColI2){
+					inimigo2.material.color.setHex(0x000000);
+				}
+
+				else if(checkBulletColI3){
+					inimigo3.material.color.setHex(0x000000);
+				}
+
 			}
 
-			if(shoot){ 
+			if(shoot && possibleToShoot<1) { 
 				var sgeo = new THREE.SphereGeometry(2,8,8);
 				var matgeo = new THREE.MeshBasicMaterial({color:0xffffff});
 				var bullet = new THREE.Mesh(sgeo, matgeo);
@@ -405,10 +455,66 @@
 				);
 				
 				bullet.velocity = new THREE.Vector3(
-				-Math.sin(camera.rotation.y),
+				0,
 				Math.cos(camera.rotation.y),
 				0
 				);
+
+				if(positionFlag == 2){
+					bullet.velocity = new THREE.Vector3(
+				    0,
+				    -Math.cos(camera.rotation.y),
+				    0
+				    );
+				}
+
+				else if(positionFlag == 4){
+					bullet.velocity = new THREE.Vector3(
+				    -Math.cos(camera.rotation.y),
+				    0,
+				    0
+				    );
+				}
+
+				else if(positionFlag == 6){
+					bullet.velocity = new THREE.Vector3(
+				    Math.cos(camera.rotation.y),
+				    0,
+				    0
+				    );
+				}
+
+				else if(positionFlag == 9){
+					bullet.velocity = new THREE.Vector3(
+				    Math.cos(camera.rotation.y),
+				    Math.cos(camera.rotation.y),
+				    0
+				    );
+				}
+
+				else if(positionFlag == 7){
+					bullet.velocity = new THREE.Vector3(
+				    -Math.cos(camera.rotation.y),
+				    Math.cos(camera.rotation.y),
+				    0
+				    );
+				}
+
+				else if(positionFlag == 1){
+					bullet.velocity = new THREE.Vector3(
+				    -Math.cos(camera.rotation.y),
+				    -Math.cos(camera.rotation.y),
+				    0
+				    );
+				}
+
+				else if(positionFlag == 3){
+					bullet.velocity = new THREE.Vector3(
+				    Math.cos(camera.rotation.y),
+				    -Math.cos(camera.rotation.y),
+				    0
+				    );
+				}
 				
 				// TTL
 				bullet.alive = true;
@@ -419,9 +525,27 @@
 				
 				bullets.push(bullet);
 				scene.add(bullet);
+
+				possibleToShoot = 10;
 			}
-		    //plataforma.rotation.y += 0.05;
-		    //nave.position.y += 0.05;
+
+			if(possibleToShoot>0) possibleToShoot -= 1;
+		    
+		    //update da posicao da nave
+			nbb = new THREE.Box3().setFromObject(nave);
+
+			var checkNaveColI1 = i1bb.intersectsBox(nbb);
+			var checkNaveColI2 = i2bb.intersectsBox(nbb);
+			var checkNaveColI3 = i3bb.intersectsBox(nbb);
+			var checkNaveColB = i3bb.intersectsBox(bbb);
+
+			console.log(checkNaveColI1.toString());
+
+			if(checkNaveColI1 || checkNaveColI2 || checkNaveColI3 || checkNaveColB){
+				nave.material.color.setHex(0x000000);
+			}
+
+
 		    renderer.render(scene, camera);
 
 		};
