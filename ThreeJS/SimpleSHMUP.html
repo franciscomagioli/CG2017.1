@@ -28,7 +28,7 @@
 	</head>
 	<body>
 	<div id="info">
-    - Simple SHMUP - <br>
+    - Simple SHMUP -<br> 
     GitHub: <a href="http:/github.com/franciscomagioli/CG2017.1" target="_blank">franciscomagioli</a>
 	</div>
 	<div id="container"></div>
@@ -72,7 +72,7 @@
 		container.appendChild(renderer.domElement);
 
 		//-----------------------------------------------------------------------------------------------
-		var moveForward, moveLeft, moveBackward, moveRight, shoot, positionFlag;
+		var moveForward, moveLeft, moveBackward, moveRight, shoot, positionFlag, bossRecoverTime;
 		var possibleToShoot =0;
 
 		//Controls
@@ -260,19 +260,19 @@
 		//3 materiais para cada um poder ser updateado separadamente
 		var materialCy1 = new THREE.MeshPhongMaterial( {
 					color: 0x260202,
-					emissive: 0x510505,
+					emissive: 0xFFB9C9,
 					side: THREE.DoubleSide,
 					shading: THREE.FlatShading
 				} )
 		var materialCy2 = new THREE.MeshPhongMaterial( {
 					color: 0x260202,
-					emissive: 0x510505,
+					emissive: 0xFFB9C9,
 					side: THREE.DoubleSide,
 					shading: THREE.FlatShading
 				} )
 		var materialCy3 = new THREE.MeshPhongMaterial( {
 					color: 0x260202,
-					emissive: 0x510505,
+					emissive: 0xFFB9C9,
 					side: THREE.DoubleSide,
 					shading: THREE.FlatShading
 				} )
@@ -356,6 +356,8 @@
 		function update () {
 
 			requestAnimationFrame(update);
+
+
 			animacaoBoss(boss);
 
 			//- Movimentacao nave -
@@ -426,17 +428,23 @@
 				var checkBulletColI1 = i1bb.intersectsBox(bulletbb);
 				var checkBulletColI2 = i2bb.intersectsBox(bulletbb);
 				var checkBulletColI3 = i3bb.intersectsBox(bulletbb);
+				var checkBulletColBoss = bbb.intersectsBox(bulletbb);
 
 				if(checkBulletColI1){
-					inimigo1.material.color.setHex(0x000000);
+					inimigo1.material.emissive.setHex(0x510505);
 				}
 
 				else if(checkBulletColI2){
-					inimigo2.material.color.setHex(0x000000);
+					inimigo2.material.emissive.setHex(0x510505);
 				}
 
 				else if(checkBulletColI3){
-					inimigo3.material.color.setHex(0x000000);
+					inimigo3.material.emissive.setHex(0x510505);
+				}
+
+				if(checkBulletColBoss){
+					boss.scale.multiplyScalar(0.997);
+					bossRecoverTime = 5;
 				}
 
 			}
@@ -547,6 +555,14 @@
 
 
 		    renderer.render(scene, camera);
+
+		    if(bossRecoverTime == 0 && boss.scale.x < 1){
+		    	boss.scale.multiplyScalar(1.01);
+		    }
+
+		    if(bossRecoverTime > 0){
+		    	bossRecoverTime -=1;
+		    }
 
 		};
 
